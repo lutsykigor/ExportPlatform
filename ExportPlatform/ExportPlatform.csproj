@@ -213,7 +213,6 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Communication\SmtpManager.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -329,6 +328,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ExportPlatform.Business\ExportPlatform.Business.csproj">
+      <Project>{9914caba-412c-415f-98db-daa1ee1ffd28}</Project>
+      <Name>ExportPlatform.Business</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ExportPlatform.DataAccess\ExportPlatform.DataAccess.csproj">
       <Project>{5e7465cd-703b-4872-aed7-7d856e239a88}</Project>
       <Name>ExportPlatform.DataAccess</Name>

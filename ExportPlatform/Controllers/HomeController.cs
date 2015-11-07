@@ -1,8 +1,10 @@
-﻿using ExportPlatform.Communication;
+﻿using ExportPlatform.Business;
 using ExportPlatform.DataAccess;
 using ExportPlatform.Models;
+using ExportPlatform.Properties;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -12,6 +14,11 @@ namespace ExportPlatform.Controllers
     [Authorize]
     public class HomeController : AsyncController
     {
+        private const string DEF_InformEmailAddressKey = "InformEmailAddress";
+        private const string DEF_AdminEmailAddressKey = "AdminEmailAddress";
+
+        private CustomerService _customerService = new CustomerService();
+
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Index()
@@ -23,39 +30,15 @@ namespace ExportPlatform.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Index(string email)
         {
-            using (var context = new DataContext())
+            return new JsonResult
             {
-                context.Customers.Add(new Customer {
-                    Email = email,
-                    IP = Request.UserHostAddress,
-                    Product = string.Empty,
-                    Amount = string.Empty,
-                    Created = DateTime.Now
-                });
-
-                await context.SaveChangesAsync();
-
-                try
-                {
-                    SmtpManager.SendAsync(email);
-                }
-                catch (Exception ex)
-                {
-                    context.Logs.Add(new Log
-                    {
-                        Email = email,
-                        Message = ex.StackTrace,
-                        Title = ex.Message,
-                        Created = DateTime.Now
-                    });
-                    await context.SaveChangesAsync();
-                    return new JsonResult { Data = new { success = false },
-                        JsonRequestBehavior = JsonRequestBehavior.DenyGet };
-                }
-            }
-
-            return new JsonResult { Data = new { success = true },
-                JsonRequestBehavior = JsonRequestBehavior.DenyGet };
+                Data = new { success = await _customerService.Add(email, Request.UserHostAddress, 
+                Resources.EmailSubject, Resources.EmailTemplate, 
+                ConfigurationManager.AppSettings[DEF_InformEmailAddressKey],
+                ConfigurationManager.AppSettings[DEF_AdminEmailAddressKey],
+                "New Lead", "From Piesek") },
+                JsonRequestBehavior = JsonRequestBehavior.DenyGet
+            };
         }
     }
 }
